@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Filter from "./Components/Filter";
 import Products from "./Components/Products";
+import Basket from "./Components/Basket";
 import "./App.css";
 
 class App extends Component {
@@ -16,9 +17,16 @@ class App extends Component {
     this.handleAddToCart = this.handleAddToCart.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.handleSortChange = this.handleSortChange.bind(this);
+    this.handleRemoveFromCart = this.handleRemoveFromCart.bind(this);
   }
 
   componentWillMount() {
+    if (localStorage.getItem("cartItems")) {
+      this.setState({
+        cartItems: JSON.parse(localStorage.getItem("cartItems"))
+      });
+    }
+
     fetch("http://localhost:8000/products")
       .then(res => res.json())
       .then(data => {
@@ -54,6 +62,13 @@ class App extends Component {
       } else {
         state.products.sort((a, b) => (a.id > b.id ? 1 : -1));
       }
+      if (state.size !== "") {
+        return {
+          filteredProducts: state.products.filter(
+            a => a.availableSizes.indexOf(state.size.toUpperCase()) >= 0
+          )
+        };
+      }
 
       return { filteredProducts: state.products };
     });
@@ -82,9 +97,15 @@ class App extends Component {
     );
   };
 
-  render() {
-    const {} = this.state;
+  handleRemoveFromCart = (e, product) => {
+    this.setState(state => {
+      const cartItems = state.cartItems.filter(item => item.id !== product.id);
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      return { cartItems: cartItems };
+    });
+  };
 
+  render() {
     return (
       <div className="container">
         <h1>E-commerce Shopping Cart Application</h1>
@@ -100,6 +121,12 @@ class App extends Component {
             <Products
               products={this.state.filteredProducts}
               handleAddToCart={this.handleAddToCart}
+            />
+          </div>
+          <div className="col-md-3">
+            <Basket
+              cartItems={this.state.cartItems}
+              handleRemoveFromCart={this.handleRemoveFromCart}
             />
           </div>
         </div>
