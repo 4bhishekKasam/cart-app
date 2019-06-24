@@ -16,7 +16,7 @@ class App extends Component {
     };
     this.handleAddToCart = this.handleAddToCart.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
-    this.handleSortChange = this.handleSortChange.bind(this);
+    this.handleSortChange = this.handleSortChange.bind(this)
     this.handleRemoveFromCart = this.handleRemoveFromCart.bind(this);
   }
 
